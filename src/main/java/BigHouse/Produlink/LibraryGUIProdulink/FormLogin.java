@@ -3,9 +3,11 @@ package BigHouse.Produlink.LibraryGUIProdulink;
 import BigHouse.Produlink.LibraryProdulink.Login.ModelLogin;
 import BigHouse.Produlink.LibraryProdulink.Login.ServiceLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.ConnectException;
 
 public class FormLogin extends JDialog {
     JButton btnLogin = new JButton();
@@ -68,8 +70,7 @@ public class FormLogin extends JDialog {
             try {
                 if(username.isEmpty()) {
                     throw new Exception("Error: Username empty");
-                }else
-                if(password.isEmpty()) {
+                }else if(password.isEmpty()) {
                     throw new Exception("Error: Password empty");
                 }
 
@@ -77,7 +78,7 @@ public class FormLogin extends JDialog {
 
                 ObjectMapper objectMapper = new ObjectMapper();
 
-                ModelLogin login = objectMapper.readValue(serviceLogin.SearchLoginByUsername(username), ModelLogin.class);
+                ModelLogin login = objectMapper.readValue(serviceLogin.FindByUsername(username), ModelLogin.class);
 
                if (login.getLogin().equals(txfLogin.getText()) && login.getPassword().equals(txfPassword.getText())){
                    dispose();
@@ -86,8 +87,12 @@ public class FormLogin extends JDialog {
                    JOptionPane.showMessageDialog(null, "Error: Invalid user or password");
                }
 
-            }catch (Exception e1) {
-                JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+            }catch (MismatchedInputException e1){
+                JOptionPane.showMessageDialog(null, "Error: Login not found");
+            } catch (ConnectException e2){
+                JOptionPane.showMessageDialog(null, "Error: API not working");
+            } catch (Exception e3){
+                JOptionPane.showMessageDialog(null, "Error: " + e3.getMessage());
             }
         });
 

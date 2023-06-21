@@ -24,6 +24,16 @@ public class ModelClient {
     public LocalDate lastUpdate;
     public String description;
     public boolean flagCreation;
+    public Double creditLimit;
+
+    public Double getCreditLimit() {
+        return creditLimit;
+    }
+
+    public void setCreditLimit(Double creditLimit) {
+        this.creditLimit = creditLimit;
+    }
+
     public ModelAddress getAddress() {
         return address;
     }

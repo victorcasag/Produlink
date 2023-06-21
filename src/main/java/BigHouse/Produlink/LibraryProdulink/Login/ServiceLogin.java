@@ -1,8 +1,7 @@
 package BigHouse.Produlink.LibraryProdulink.Login;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,7 +13,7 @@ import java.net.http.HttpResponse;
 
 public class ServiceLogin {
 
-    public String SearchLoginByUsername(String username) throws IOException, InterruptedException {
+    public String FindByUsername(String username) throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         String apiUrl = "http://localhost:8080/api/login/search/by-name/" + username;
         HttpRequest request = HttpRequest.newBuilder()
@@ -22,19 +21,15 @@ public class ServiceLogin {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String responseBody = response.body();
-
-        return responseBody;
+        return response.body();
     }
 
-    public void InsertNewLogin(ModelLogin login) throws IOException, JSONException {
+    public void InsertNewLogin(ModelLogin login) throws IOException {
         String apiUrl = "http://localhost:8080/api/login/insert";
-        String requestBody = new JSONObject()
-                .put("login", login.getLogin())
-                .put("name", login.getName())
-                .put("password", login.getPassword())
-                .put("role", login.getRole())
-                .toString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String requestBody = mapper.writeValueAsString(login);
 
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -47,15 +42,15 @@ public class ServiceLogin {
             outputStream.flush();
         }
 
-        int responseCode = connection.getResponseCode();
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
         StringBuilder response = new StringBuilder();
+
         while ((inputLine = reader.readLine()) != null) {
             response.append(inputLine);
         }
-        reader.close();
 
+        reader.close();
         connection.disconnect();
     }
 }

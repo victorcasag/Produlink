@@ -18,9 +18,13 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
 public class FormClient extends JInternalFrame implements Observer {
+    private JTable tblSales = new JTable();
+    private JScrollPane spSales = new JScrollPane();
+    private DefaultTableModel tblmodelSales= new DefaultTableModel(){public boolean isCellEditable(int row, int col) {return false;}};
     Border border = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
     String[] combBoxTextsSex = new String[] {"Select", "Female", "Male"};
     String[] combBoxTextsStates = new String[]
@@ -29,7 +33,7 @@ public class FormClient extends JInternalFrame implements Observer {
                     "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"};
     JLabel lblImage = new JLabel();
 
-    JTextField txfCountry = new JTextField("Brasil");
+    JTextField txfCountry = new JTextField("Brazil");
     JTextField txfCodClient = new JTextField();
     JTextField txfFullName = new JTextField("marcel");
     JTextField txfEmail = new JTextField("email");
@@ -40,6 +44,19 @@ public class FormClient extends JInternalFrame implements Observer {
     JTextField txfProfession = new JTextField("profissao");
     JTextField txfNameOfMother = new JTextField("nome mae");
     JTextField txfNameOfFather = new JTextField("nome pai");
+    JTextField txfTotalSpent = new JTextField("R$ 3213123,11");
+    JTextField txfQuantityOfPurchase = new JTextField("1233");
+    JTextField txfBiggestPurchase = new JTextField("R$ 10mi");
+    JTextField txfQuantityOpenCredit = new JTextField("4");
+    JTextField txfValueOpenCredit = new JTextField("R$ 3000,00");
+    JTextField txfLimitlessCredit = new JTextField("R$ 300,00");
+    JTextField txfAvailableCredit = new JTextField("R$ 300,00");
+    JTextField txfAmountDue = new JTextField("5");
+    JTextField txfBiggestDue = new JTextField("364");
+    JTextField txfAverageDue = new JTextField("R$ 300,00");
+    JTextField txfLastPayment = new JTextField("01/02/2002");
+    JTextField txfInterestDue = new JTextField("R$ 245,00");
+    JTextField txfQuantityPayWithDue = new JTextField("4");
 
     JTextArea txfDescription = new JTextArea("asdasid");
 
@@ -49,14 +66,13 @@ public class FormClient extends JInternalFrame implements Observer {
     JFormattedTextField txfCPF = new JFormattedTextField();
     JFormattedTextField txfDateOfBirth = new JFormattedTextField("01/01/2020");
     JFormattedTextField txfDateCreation = new JFormattedTextField("01/01/2020");
-    JFormattedTextField txfDateLastUpdate = new JFormattedTextField("01/01/2020");
+    JFormattedTextField txfDateLastUpdate = new JFormattedTextField("30/11/2011");
     JFormattedTextField txfNumberPhone = new JFormattedTextField();
     JFormattedTextField txfTelephoneHouse = new JFormattedTextField();
 
     JButton btnAddImage = new JButton("+");
     JButton btnSave = new JButton("Save");
     JButton btnConsultClient = new JButton("Consult");
-    JButton btnConsulHistorytClient = new JButton("History");
     JButton btnCancel = new JButton("Cancel");
 
     JComboBox<String> cbSex = new JComboBox<String>(combBoxTextsSex);
@@ -85,7 +101,7 @@ public class FormClient extends JInternalFrame implements Observer {
         objectMapper.registerModule(new JavaTimeModule());
 
         java.util.List<ModelClient> clientList = objectMapper.readValue(serviceClient.FindAll(), new TypeReference<List<ModelClient>>() {});
-        Long maxId = Long.valueOf(0);
+        Long maxId = 0L;
         for(ModelClient obj : clientList){
             if(obj.getId() > maxId){
                 maxId = obj.getId();
@@ -102,6 +118,21 @@ public class FormClient extends JInternalFrame implements Observer {
         setContentPane(panel);
         panel.setLayout(null);
 
+        //Table
+
+        if (tblmodelSales.getColumnCount() == 0) {
+            tblmodelSales.addColumn("Cod");
+            tblmodelSales.addColumn("Date");
+            tblmodelSales.addColumn("Total value");
+        }
+
+        tblSales = new JTable(tblmodelSales);
+        spSales = new JScrollPane(tblSales);
+        spSales.setBounds(400, 550, 550, 180);
+        panel.add(spSales);
+        tblSales.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+
         //Label
 
         JLabel lblCodClient = new JLabel("Cod");
@@ -110,17 +141,17 @@ public class FormClient extends JInternalFrame implements Observer {
         panel.add(lblCodClient);
 
         JLabel lblFullName = new JLabel("Full name");
-        lblFullName.setBounds(150, 25, 100, 25);
+        lblFullName.setBounds(100, 25, 100, 25);
         lblFullName.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblFullName);
 
         JLabel lblCPF = new JLabel("CPF");
-        lblCPF.setBounds(480, 25, 50, 25);
+        lblCPF.setBounds(420, 25, 50, 25);
         lblCPF.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblCPF);
 
         JLabel lblRG = new JLabel("RG");
-        lblRG.setBounds(480, 220, 50, 25);
+        lblRG.setBounds(570, 25, 50, 25);
         lblRG.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblRG);
 
@@ -130,27 +161,27 @@ public class FormClient extends JInternalFrame implements Observer {
         panel.add(lblDateOfBirth);
 
         JLabel lblNumberPhone = new JLabel("Phone");
-        lblNumberPhone.setBounds(170, 75, 150, 25);
+        lblNumberPhone.setBounds(130, 75, 150, 25);
         lblNumberPhone.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblNumberPhone);
 
         JLabel lblNumberTelephone = new JLabel("Telephone");
-        lblNumberTelephone.setBounds(320, 75, 200, 25);
+        lblNumberTelephone.setBounds(280, 75, 200, 25);
         lblNumberTelephone.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblNumberTelephone);
 
         JLabel lblSex = new JLabel("Gender");
-        lblSex.setBounds(480, 75, 100, 25);
+        lblSex.setBounds(430, 75, 100, 25);
         lblSex.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblSex);
 
         JLabel lblProfession = new JLabel("Profession");
-        lblProfession.setBounds(25, 275, 100, 25);
+        lblProfession.setBounds(25, 215, 100, 25);
         lblProfession.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblProfession);
 
         JLabel lblEmail = new JLabel("Email");
-        lblEmail.setBounds(250, 275, 100, 25);
+        lblEmail.setBounds(240, 215, 100, 25);
         lblEmail.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblEmail);
 
@@ -159,20 +190,25 @@ public class FormClient extends JInternalFrame implements Observer {
         lblDescription.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblDescription);
 
+        JLabel lblSalesHistory = new JLabel("Sales History");
+        lblSalesHistory.setBounds(400, 510, 150, 50);
+        lblSalesHistory.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblSalesHistory);
+
         JLabel lblDateCreation = new JLabel("Date Creation");
-        lblDateCreation.setBounds(400, 580, 150, 50);
+        lblDateCreation.setBounds(500, 215, 150, 25);
         lblDateCreation.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblDateCreation);
 
         JLabel lblDateLastUpdate = new JLabel("Last Update");
-        lblDateLastUpdate.setBounds(400, 510, 100, 50);
+        lblDateLastUpdate.setBounds(615, 215, 100, 25);
         lblDateLastUpdate.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblDateLastUpdate);
 
         //Address
 
         JLabel lblCodHouse = new JLabel("Number house");
-        lblCodHouse.setBounds(400, 120, 150, 25);
+        lblCodHouse.setBounds(390, 120, 150, 25);
         lblCodHouse.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
         panel.add(lblCodHouse);
 
@@ -182,42 +218,42 @@ public class FormClient extends JInternalFrame implements Observer {
         panel.add(lblStreet);
 
         JLabel lblZipCode = new JLabel("Zipcode");
-        lblZipCode.setBounds(25, 165, 100, 25);
+        lblZipCode.setBounds(490, 120, 100, 25);
         lblZipCode.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblZipCode);
 
         JLabel lblReference = new JLabel("Reference");
-        lblReference.setBounds(150, 165, 100, 25);
+        lblReference.setBounds(25, 165, 100, 25);
         lblReference.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblReference);
 
         JLabel lblNameOfMother = new JLabel("Name Of Mother");
-        lblNameOfMother.setBounds(25, 350, 150, 25);
+        lblNameOfMother.setBounds(25, 265, 150, 25);
         lblNameOfMother.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblNameOfMother);
 
         JLabel lblNameOfFather = new JLabel("Name Of Father");
-        lblNameOfFather.setBounds(25, 425, 150, 25);
+        lblNameOfFather.setBounds(350, 265, 150, 25);
         lblNameOfFather.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblNameOfFather);
 
         JLabel lblNeighborhood = new JLabel("Neighborhood");
-        lblNeighborhood.setBounds(470, 165, 100, 25);
+        lblNeighborhood.setBounds(600, 120, 100, 25);
         lblNeighborhood.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblNeighborhood);
 
         JLabel lblCity = new JLabel("City");
-        lblCity.setBounds(25, 220, 100, 25);
+        lblCity.setBounds(330, 165, 100, 25);
         lblCity.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblCity);
 
         JLabel lblState = new JLabel("State");
-        lblState.setBounds(200, 220, 100, 25);
+        lblState.setBounds(480, 165, 100, 25);
         lblState.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblState);
 
         JLabel lblCountry = new JLabel("Country");
-        lblCountry.setBounds(320, 220, 100, 25);
+        lblCountry.setBounds(580, 165, 100, 25);
         lblCountry.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblCountry);
 
@@ -225,42 +261,174 @@ public class FormClient extends JInternalFrame implements Observer {
         lblImage.setBounds(710, 25, 250, 250);
         panel.add(lblImage);
 
+        //History Sales
+
+        JLabel lblTotalSpent = new JLabel("Total Spent");
+        lblTotalSpent.setBounds(400, 460, 100, 25);
+        lblTotalSpent.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblTotalSpent);
+
+        txfTotalSpent.setBounds(400, 485, 125, 20);
+        txfTotalSpent.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfTotalSpent);
+        txfTotalSpent.setEnabled(false);
+
+        JLabel lblQuantityOfPurchase = new JLabel("Quantity Purchase");
+        lblQuantityOfPurchase.setBounds(550, 460, 200, 25);
+        lblQuantityOfPurchase.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblQuantityOfPurchase);
+
+        txfQuantityOfPurchase.setBounds(550, 485, 130, 20);
+        txfQuantityOfPurchase.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfQuantityOfPurchase);
+        txfQuantityOfPurchase.setEnabled(false);
+
+        JLabel lblBiggestPurchase = new JLabel("Quantity Purchase");
+        lblBiggestPurchase.setBounds(710, 460, 200, 25);
+        lblBiggestPurchase.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblBiggestPurchase);
+
+        txfBiggestPurchase.setBounds(710, 485, 125, 20);
+        txfBiggestPurchase.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfBiggestPurchase);
+        txfBiggestPurchase.setEnabled(false);
+
+        //Credit
+
+        JLabel lblQuantityOpenCredit = new JLabel("Quantity open credit");
+        lblQuantityOpenCredit.setBounds(25, 355, 200, 25);
+        lblQuantityOpenCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblQuantityOpenCredit);
+
+        txfQuantityOpenCredit.setBounds(25, 380, 125, 20);
+        txfQuantityOpenCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfQuantityOpenCredit);
+        txfQuantityOpenCredit.setEnabled(false);
+
+        JLabel lblValueOpenCredit = new JLabel("Open credit");
+        lblValueOpenCredit.setBounds(200, 355, 200, 25);
+        lblValueOpenCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblValueOpenCredit);
+
+        txfValueOpenCredit.setBounds(200, 380, 125, 20);
+        txfValueOpenCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfValueOpenCredit);
+        txfValueOpenCredit.setEnabled(false);
+
+        JLabel lblLimitlessCredit = new JLabel("Credit limit");
+        lblLimitlessCredit.setBounds(350, 355, 200, 25);
+        lblLimitlessCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblLimitlessCredit);
+
+        txfLimitlessCredit.setBounds(350, 380, 125, 20);
+        txfLimitlessCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfLimitlessCredit);
+
+        JLabel lblAvailableCredit = new JLabel("Credit available");
+        lblAvailableCredit.setBounds(500, 355, 200, 25);
+        lblAvailableCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblAvailableCredit);
+
+        txfAvailableCredit.setBounds(500, 380, 125, 20);
+        txfAvailableCredit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfAvailableCredit);
+        txfAvailableCredit.setEnabled(false);
+
+        JLabel lblAmountDue = new JLabel("Amount due");
+        lblAmountDue.setBounds(650, 355, 200, 25);
+        lblAmountDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblAmountDue);
+
+        txfAmountDue.setBounds(650, 380, 100, 20);
+        txfAmountDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfAmountDue);
+        txfAmountDue.setEnabled(false);
+
+        JLabel lblBiggestDue = new JLabel("Biggest due (day)");
+        lblBiggestDue.setBounds(780, 355, 200, 25);
+        lblBiggestDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblBiggestDue);
+
+        txfBiggestDue.setBounds(780, 380, 125, 20);
+        txfBiggestDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfBiggestDue);
+        txfBiggestDue.setEnabled(false);
+
+        JLabel lblAverageDue = new JLabel("Average due");
+        lblAverageDue.setBounds(25, 405, 200, 25);
+        lblAverageDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblAverageDue);
+
+        txfAverageDue.setBounds(25, 430, 125, 20);
+        txfAverageDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfAverageDue);
+        txfAverageDue.setEnabled(false);
+
+        JLabel lblInterestDue = new JLabel("Interest due");
+        lblInterestDue.setBounds(200, 405, 200, 25);
+        lblInterestDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblInterestDue);
+
+        txfInterestDue.setBounds(200, 430, 125, 20);
+        txfInterestDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfInterestDue);
+        txfInterestDue.setEnabled(false);
+
+        JLabel lblLastPayment = new JLabel("Last payment");
+        lblLastPayment.setBounds(350, 405, 200, 25);
+        lblLastPayment.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblLastPayment);
+
+        txfLastPayment.setBounds(350, 430, 125, 20);
+        txfLastPayment.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfLastPayment);
+        txfLastPayment.setEnabled(false);
+
+        JLabel lblQuantityPayWithDue = new JLabel("Pay with due");
+        lblQuantityPayWithDue.setBounds(500, 405, 200, 25);
+        lblQuantityPayWithDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblQuantityPayWithDue);
+
+        txfQuantityPayWithDue.setBounds(500, 430, 125, 20);
+        txfQuantityPayWithDue.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfQuantityPayWithDue);
+        txfQuantityPayWithDue.setEnabled(false);
 
         //JTextFields
 
-        txfCodClient.setBounds(25, 50, 100, 20);
+        txfCodClient.setBounds(25, 50, 50, 20);
         txfCodClient.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfCodClient);
 
-        txfFullName.setBounds(150, 50, 300, 20);
+        txfFullName.setBounds(100, 50, 300, 20);
         txfFullName.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfFullName);
 
-        txfCPF.setBounds(480, 50, 130, 20);
+        txfCPF.setBounds(420, 50, 130, 20);
         txfCPF.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter maskCPF = new MaskFormatter("###.###.###-##");
         maskCPF.install(txfCPF);
         panel.add(txfCPF);
 
-        txfRG.setBounds(480, 245, 100, 20);
+        txfRG.setBounds(570, 50, 100, 20);
         txfRG.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter maskRG = new MaskFormatter("########-#");
         maskRG.install(txfRG);
         panel.add(txfRG);
 
-        txfProfession.setBounds(25, 300, 200, 20);
+        txfProfession.setBounds(25, 240, 200, 20);
         txfProfession.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfProfession);
 
-        txfEmail.setBounds(250, 300, 250, 20);
+        txfEmail.setBounds(240, 240, 250, 20);
         txfEmail.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfEmail);
 
-        txfNameOfMother.setBounds(25, 375, 300, 20);
+        txfNameOfMother.setBounds(25, 290, 300, 20);
         txfNameOfMother.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfNameOfMother);
 
-        txfNameOfFather.setBounds(25, 450, 300, 20);
+        txfNameOfFather.setBounds(350, 290, 300, 20);
         txfNameOfFather.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfNameOfFather);
 
@@ -270,61 +438,64 @@ public class FormClient extends JInternalFrame implements Observer {
         dateMaskDateOfBirth.install(txfDateOfBirth);
         panel.add(txfDateOfBirth);
 
-        txfDateCreation.setBounds(400, 620, 95, 20);
+        txfDateCreation.setBounds(500, 240, 95, 20);
         txfDateCreation.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter dateMaskDateCreation = new MaskFormatter("##/##/####");
         dateMaskDateCreation.install(txfDateCreation);
         panel.add(txfDateCreation);
+        txfDateCreation.setEnabled(false);
 
-        txfDateLastUpdate.setBounds(400, 550, 95, 20);
+        txfDateLastUpdate.setBounds(615, 240, 95, 20);
         txfDateLastUpdate.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter dateMaskDateLastUpdate = new MaskFormatter("##/##/####");
         dateMaskDateLastUpdate.install(txfDateLastUpdate);
         panel.add(txfDateLastUpdate);
+        txfDateLastUpdate.setEnabled(false);
 
-        txfNumberPhone.setBounds(170, 100, 140, 20);
+        txfNumberPhone.setBounds(130, 100, 140, 20);
         txfNumberPhone.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter dateMaskNumberPhone = new MaskFormatter("(##) # ####-####");
         dateMaskNumberPhone.install(txfNumberPhone);
         panel.add(txfNumberPhone);
 
-        txfTelephoneHouse.setBounds(320, 100, 135, 20);
+        txfTelephoneHouse.setBounds(280, 100, 135, 20);
         txfTelephoneHouse.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
-        MaskFormatter masktxfTelephoneHouse = new MaskFormatter("(##) ####-####");
-        masktxfTelephoneHouse.install(txfTelephoneHouse);
+        MaskFormatter maskTxfTelephoneHouse = new MaskFormatter("(##) ####-####");
+        maskTxfTelephoneHouse.install(txfTelephoneHouse);
         panel.add(txfTelephoneHouse);
 
         txfStreet.setBounds(25, 145, 350, 20);
         txfStreet.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfStreet);
 
-        txfCodHouse.setBounds(400, 145, 90, 20);
+        txfCodHouse.setBounds(390, 145, 90, 20);
         txfCodHouse.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter maskCodHouse = new MaskFormatter("########");
         maskCodHouse.install(txfCodHouse);
         panel.add(txfCodHouse);
 
-        txfZipCode.setBounds(25, 190, 100, 20);
+        txfZipCode.setBounds(490, 145, 100, 20);
         txfZipCode.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         MaskFormatter maskZipCode = new MaskFormatter("#####-###");
         maskZipCode.install(txfZipCode);
         panel.add(txfZipCode);
 
-        txfReference.setBounds(150, 190, 300, 20);
+        txfReference.setBounds(25, 190, 300, 20);
         txfReference.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfReference);
 
-        txfNeighborhood.setBounds(470, 190, 100, 20);
+        txfNeighborhood.setBounds(600, 145, 100, 20);
         txfNeighborhood.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfNeighborhood);
 
-        txfCity.setBounds(25, 245, 150, 20);
+        txfCity.setBounds(330, 190, 150, 20);
         txfCity.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfCity);
 
-        txfCountry.setBounds(320, 245, 150, 20);
+        txfCountry.setBounds(580, 190, 100, 20);
         txfCountry.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfCountry);
+        txfCountry.setEnabled(false);
 
         txfDescription.setBounds(25, 550, 350, 100);
         txfDescription.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
@@ -334,11 +505,11 @@ public class FormClient extends JInternalFrame implements Observer {
 
         //ComboBox
 
-        cbSex.setBounds(480, 100, 110, 20);
+        cbSex.setBounds(430, 100, 110, 20);
         cbSex.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(cbSex);
 
-        cbState.setBounds(200, 245, 100, 20);
+        cbState.setBounds(480, 190, 100, 20);
         cbState.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(cbState);
 
@@ -360,12 +531,6 @@ public class FormClient extends JInternalFrame implements Observer {
         btnSave.setHorizontalTextPosition(SwingConstants.CENTER);
         panel.add(btnSave);
 
-        btnConsulHistorytClient.setBounds(400, 670, 90, 65);
-        btnConsulHistorytClient.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
-        btnConsulHistorytClient.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btnConsulHistorytClient.setHorizontalTextPosition(SwingConstants.CENTER);
-        panel.add(btnConsulHistorytClient);
-
         btnCancel.setBounds(25, 670, 90, 65);
         btnCancel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(btnCancel);
@@ -383,7 +548,7 @@ public class FormClient extends JInternalFrame implements Observer {
 
         btnSave.addActionListener(e->{
             try {
-                Validations();
+                //Validations();
 
                 ServiceClient serviceClient = new ServiceClient();
                 ServiceAddress serviceAddress = new ServiceAddress();
@@ -391,10 +556,10 @@ public class FormClient extends JInternalFrame implements Observer {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 try {
-                    ModelClient client = objectMapper.readValue(serviceClient.FindById(Long.valueOf(txfCodClient.getText())), ModelClient.class);
+                    //ModelClient client = objectMapper.readValue(serviceClient.FindById(Long.valueOf(txfCodClient.getText())), ModelClient.class);
                     //update
                 }catch (Exception e1){
-                    //continua codigo
+                    //continua code
                 }
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -415,7 +580,7 @@ public class FormClient extends JInternalFrame implements Observer {
                 address.setCity(txfCity.getText());
 
                 java.util.List<ModelAddress> addressList = objectMapper.readValue(serviceAddress.FindAll(), new TypeReference<List<ModelAddress>>() {});
-                Long maxId = Long.valueOf(0);
+                Long maxId = 0L;
                 for(ModelAddress obj : addressList){
                     if(obj.getId() > maxId){
                         maxId = obj.getId();
@@ -427,7 +592,7 @@ public class FormClient extends JInternalFrame implements Observer {
                 ModelClient client = new ModelClient();
 
                 java.util.List<ModelClient> clientList = objectMapper.readValue(serviceClient.FindAll(), new TypeReference<List<ModelClient>>() {});
-                Long maxIdClient = Long.valueOf(0);
+                Long maxIdClient = 0L;
                 for(ModelClient obj : clientList){
                     if(obj.getId() > maxIdClient){
                         maxIdClient = obj.getId();
@@ -453,6 +618,7 @@ public class FormClient extends JInternalFrame implements Observer {
                 client.setRg(txfRG.getText());
                 client.setUrlPhoto(lblImage.getText());
                 client.setFlagCreation(true);
+                client.setCreditLimit(Double.valueOf(txfLimitlessCredit.getText()));
 
                 serviceClient.InsertClient(client);
 
@@ -516,7 +682,7 @@ public class FormClient extends JInternalFrame implements Observer {
 
     }
 
-    public Exception Validations() {
+    public void Validations() {
         try {
             if(cbSex.getSelectedIndex() == 0) {
                 throw new Exception("Select a gender");
@@ -531,9 +697,8 @@ public class FormClient extends JInternalFrame implements Observer {
 
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro Validação cpf: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error validations: " + e.getMessage());
         }
-        return null;
     }
 
 }

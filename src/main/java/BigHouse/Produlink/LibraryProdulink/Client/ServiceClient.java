@@ -2,8 +2,6 @@ package BigHouse.Produlink.LibraryProdulink.Client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.json.JSONException;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,9 +22,7 @@ public class ServiceClient {
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String responseBody = response.body();
-
-        return responseBody;
+        return response.body();
     }
 
     public String FindAll() throws IOException, InterruptedException{
@@ -38,15 +34,10 @@ public class ServiceClient {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        String responseBody = response.body();
-
-        return responseBody;
+        return response.body();
     }
 
-    public ServiceClient() {
-    }
-
-    public void InsertClient(ModelClient client) throws IOException, JSONException {
+    public void InsertClient(ModelClient client) throws IOException {
         String apiUrl = "http://localhost:8080/api/client/insert";
 
         ObjectMapper mapper = new ObjectMapper();

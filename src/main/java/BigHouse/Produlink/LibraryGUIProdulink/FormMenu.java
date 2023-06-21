@@ -26,7 +26,7 @@ public class FormMenu extends JFrame {
     private JMenuItem menuItemExit = new JMenuItem();
 
     private JButton btnClient = new JButton();
-    private JButton btnPayent = new JButton();
+    private JButton btnSell = new JButton();
     private JButton btnBackupSystem = new JButton();
     private JButton btnExit = new JButton();
     private JDesktopPane desktop = new JDesktopPane();
@@ -43,7 +43,7 @@ public class FormMenu extends JFrame {
         BuildForm();
         ActionsButtons();
         RolePermissions(role);
-        menuItemClient.doClick();
+        btnSell.doClick();
     }
 
     public void RolePermissions(final String role) {
@@ -124,13 +124,13 @@ public class FormMenu extends JFrame {
         btnClient.setHorizontalTextPosition(SwingConstants.CENTER);
         getContentPane().add(btnClient);
 
-        btnPayent = new JButton("Sell");
-        btnPayent.setBounds(25, 245, 75, 70);
-        btnPayent.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
-        btnPayent.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Cashier.png"));
-        btnPayent.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btnPayent.setHorizontalTextPosition(SwingConstants.CENTER);
-        getContentPane().add(btnPayent);
+        btnSell = new JButton("Sell");
+        btnSell.setBounds(25, 245, 75, 70);
+        btnSell.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
+        btnSell.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Cashier.png"));
+        btnSell.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnSell.setHorizontalTextPosition(SwingConstants.CENTER);
+        getContentPane().add(btnSell);
 
         btnBackupSystem = new JButton("Backup");
         btnBackupSystem.setBounds(25, 340, 75, 70);
@@ -149,8 +149,9 @@ public class FormMenu extends JFrame {
         getContentPane().add(btnExit);
     }
 
-    private FormClient formClient = new FormClient();
-    private FormCreateLogin formCreateLogin = new FormCreateLogin();
+    private final FormClient formClient = new FormClient();
+    private final FormCreateLogin formCreateLogin = new FormCreateLogin();
+    private final FormSale formSale = new FormSale();
 
     public void ActionsButtons() {
 
@@ -177,6 +178,16 @@ public class FormMenu extends JFrame {
             }
 
         });
+        
+        btnSell.addActionListener(e->{
+            if(CheckForm(formSale.getName())) {
+                FormFocus(formSale);
+            }else {
+                formSale.setName("formSale");
+                desktop.add(formSale).setVisible(true);
+            }
+        });
+        
         btnClient.addActionListener(e->{
             if(CheckForm(formClient.getName())) {
                 FormFocus(formClient);
