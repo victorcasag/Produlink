@@ -25,10 +25,11 @@ public class FormMenu extends JFrame {
     private JMenuItem menuItemCreateUser = new JMenuItem();
     private JMenuItem menuItemExit = new JMenuItem();
 
-    private JButton btnClient = new JButton();
-    private JButton btnSell = new JButton();
-    private JButton btnBackupSystem = new JButton();
-    private JButton btnExit = new JButton();
+    private JButton btnClient = new JButton("Client");
+    private JButton btnProduct = new JButton("Product");
+    private JButton btnSell = new JButton("Sell");
+    private JButton btnBackupSystem = new JButton("Backup");
+    private JButton btnExit = new JButton("Exit");
     private JDesktopPane desktop = new JDesktopPane();
 
     public FormMenu(final String login, final String role) throws ParseException, IOException, InterruptedException {
@@ -116,7 +117,6 @@ public class FormMenu extends JFrame {
          * Buttons
          */
 
-        btnClient = new JButton("Client");
         btnClient.setBounds(25, 150, 75, 70);
         btnClient.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         btnClient.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Client.png"));
@@ -124,8 +124,14 @@ public class FormMenu extends JFrame {
         btnClient.setHorizontalTextPosition(SwingConstants.CENTER);
         getContentPane().add(btnClient);
 
-        btnSell = new JButton("Sell");
-        btnSell.setBounds(25, 245, 75, 70);
+        btnProduct.setBounds(25, 245, 75, 70);
+        btnProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
+        btnProduct.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Client.png"));
+        btnProduct.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnProduct.setHorizontalTextPosition(SwingConstants.CENTER);
+        getContentPane().add(btnProduct);
+
+        btnSell.setBounds(25, 340, 75, 70);
         btnSell.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         btnSell.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Cashier.png"));
         btnSell.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -133,7 +139,7 @@ public class FormMenu extends JFrame {
         getContentPane().add(btnSell);
 
         btnBackupSystem = new JButton("Backup");
-        btnBackupSystem.setBounds(25, 340, 75, 70);
+        btnBackupSystem.setBounds(25, 435, 75, 70);
         btnBackupSystem.setFont(new Font(Font.MONOSPACED, Font.BOLD, 11));
         btnBackupSystem.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Backup.png"));
         btnBackupSystem.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -141,7 +147,7 @@ public class FormMenu extends JFrame {
         getContentPane().add(btnBackupSystem);
 
         btnExit = new JButton("Quit");
-        btnExit.setBounds(25, 435, 75, 70);
+        btnExit.setBounds(25, 530, 75, 70);
         btnExit.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         btnExit.setIcon(new ImageIcon("C:\\Users\\victo\\Desktop\\ProjectGymUNESC\\ClassImageLibrary\\src\\48x48\\Exit.png"));
         btnExit.setVerticalTextPosition(SwingConstants.BOTTOM);

@@ -7,15 +7,24 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import BigHouse.Produlink.LibraryProdulink.Observer.ModelConsult;
+import BigHouse.Produlink.LibraryProdulink.Client.ModelClient;
+import BigHouse.Produlink.LibraryProdulink.Client.ServiceClient;
+import BigHouse.Produlink.LibraryProdulink.Login.ModelLogin;
+import BigHouse.Produlink.LibraryProdulink.Login.ServiceLogin;
 import BigHouse.Produlink.LibraryProdulink.Observer.Observable;
 import BigHouse.Produlink.LibraryProdulink.Observer.Observer;
+import BigHouse.Produlink.LibraryProdulink.Product.ModelProduct;
+import BigHouse.Produlink.LibraryProdulink.Product.ServiceProduct;
+import BigHouse.Produlink.LibraryProdulink.Sale.ModelSale;
+import BigHouse.Produlink.LibraryProdulink.Sale.ServiceSale;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class FormConsultGeneric extends JDialog implements Observable{
 
@@ -32,9 +41,10 @@ public class FormConsultGeneric extends JDialog implements Observable{
     private JButton btnCancel = new JButton();
 
     private List<Observer> listObs = new ArrayList<Observer>();
-    private final List<Object> service;
+    private final Object type;
+    private List<Object> listObj;
 
-    public FormConsultGeneric(final List<Object> service, final String[] columns, final Observer obs) {
+    public FormConsultGeneric(final Object type, final String[] columns, final Observer obs) {
 
         setBounds(100, 100, 400, 250);
         setModal(true);
@@ -43,12 +53,13 @@ public class FormConsultGeneric extends JDialog implements Observable{
         setResizable(false);
         setLocationRelativeTo(null);
 
-        this.service = service;
+        this.type = type;
 
         AddObserver(obs);
 
         buildWindow(columns);
         actionsButtons();
+        loadData();
     }
 
     public void buildWindow(final String[] columns){
@@ -80,9 +91,6 @@ public class FormConsultGeneric extends JDialog implements Observable{
         btnCancel.setBounds(290, 10, 90, 20);
         btnCancel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
         getContentPane().add(btnCancel);
-
-        loadData();
-
     }
 
     public void actionsButtons() {
@@ -101,21 +109,54 @@ public class FormConsultGeneric extends JDialog implements Observable{
 
     private void loadData() {
 
-        while(tblModel.getRowCount()>0) {
-            tblModel.removeRow(0);
-        }
-
         try {
-
-            for (Object obj : service) {
-                tblModel.addRow(((ModelConsult)obj).GetReuslt());
+            while (tblModel.getRowCount() > 0) {
+                tblModel.removeRow(0);
             }
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            objectMapper.registerModule(new JavaTimeModule());
+
+            if (type instanceof ModelClient) {
+                ServiceClient serviceClient = new ServiceClient();
+                List<ModelClient> clientList = objectMapper.readValue(serviceClient.FindAll(), new TypeReference<List<ModelClient>>() {});
+
+                for (ModelClient objClient : clientList) {
+                    Object[] rowData = {objClient.getId(), objClient.getName()};
+                    tblModel.addRow(rowData);
+                }
+                listObj = new ArrayList<>();
+                listObj.addAll(clientList);
+
+            } else if (type instanceof ModelLogin) {
+                ServiceLogin serviceLogin = new ServiceLogin();
+                List<ModelLogin> loginList = objectMapper.readValue(serviceLogin.FindAll(), new TypeReference<List<ModelLogin>>() {});
+
+                for (ModelLogin objLogin : loginList) {
+                    Object[] rowData = {objLogin.getId(), objLogin.getLogin()};
+                    tblModel.addRow(rowData);
+                }
+                listObj = new ArrayList<>();
+                listObj.addAll(loginList);
+
+            } else if (type instanceof ModelProduct) {
+                ServiceProduct serviceProduct = new ServiceProduct();
+                List<ModelProduct> productList = objectMapper.readValue(serviceProduct.FindAll(), new TypeReference<List<ModelProduct>>() {});
+
+                for (ModelProduct objProduct : productList) {
+                    Object[] rowData = {objProduct.getId(), objProduct.getName()};
+                    tblModel.addRow(rowData);
+                }
+                listObj = new ArrayList<>();
+                listObj.addAll(productList);
+            }
+
+
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
-
 
     @Override
     public void AddObserver(Observer obj) {
@@ -131,7 +172,7 @@ public class FormConsultGeneric extends JDialog implements Observable{
     public void NotifyAllObserver() {
         for (int i=0; i < listObs.size(); i++ ) {
             Observer obs = listObs.get(i);
-            obs.Update(service.get(tbl.getSelectedRow()));
+            obs.Update(listObj.get(tbl.getSelectedRow()));
         }
     }
 

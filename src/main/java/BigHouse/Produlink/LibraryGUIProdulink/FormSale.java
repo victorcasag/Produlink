@@ -1,10 +1,18 @@
 package BigHouse.Produlink.LibraryGUIProdulink;
 
+import BigHouse.Produlink.LibraryProdulink.Address.ModelAddress;
+import BigHouse.Produlink.LibraryProdulink.Address.ServiceAddress;
 import BigHouse.Produlink.LibraryProdulink.Client.ModelClient;
 import BigHouse.Produlink.LibraryProdulink.Client.ServiceClient;
+import BigHouse.Produlink.LibraryProdulink.Login.ModelLogin;
+import BigHouse.Produlink.LibraryProdulink.Login.ServiceLogin;
 import BigHouse.Produlink.LibraryProdulink.Observer.Observer;
 import BigHouse.Produlink.LibraryProdulink.Product.ModelProduct;
+import BigHouse.Produlink.LibraryProdulink.Product.ServiceProduct;
 import BigHouse.Produlink.LibraryProdulink.Sale.ModelSale;
+import BigHouse.Produlink.LibraryProdulink.Sale.ServiceSale;
+import BigHouse.Produlink.LibraryProdulink.SaleProduct.ModelSaleProduct;
+import BigHouse.Produlink.LibraryProdulink.SaleProduct.ServiceSaleProduct;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -25,6 +33,7 @@ public class FormSale extends JInternalFrame implements Observer {
     private JScrollPane spSales = new JScrollPane();
     private DefaultTableModel tblmodelSales= new DefaultTableModel(){public boolean isCellEditable(int row, int col) {return false;}};
 
+    JTextField txfCodSale = new JTextField();
     JTextField txfCodClient = new JTextField();
     JTextField txfFullName = new JTextField("Marcel");
     JTextField txfCodSeller = new JTextField();
@@ -230,27 +239,99 @@ public class FormSale extends JInternalFrame implements Observer {
 
         btnFindClient.addActionListener(e->{
             try {
-                ServiceClient serviceClient = new ServiceClient();
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.registerModule(new JavaTimeModule());
+                ModelClient objClient = new ModelClient();
 
-                java.util.List<ModelClient> clientList = objectMapper.readValue(serviceClient.FindAll(), new TypeReference<List<ModelClient>>() {
-                });
-
-                new FormConsultGeneric(Collections.singletonList(clientList), new String[]{"ID Client", "Nome"}, FormSale.this).setVisible(true);
+                new FormConsultGeneric(objClient, new String[]{"ID Client", "Name"}, FormSale.this).setVisible(true);
             }catch (Exception e1){
                 System.out.println(e1.getMessage());
             }
         });
 
         btnFindProduct.addActionListener(e->{
+            try {
+                ModelProduct objProduct = new ModelProduct();
 
+                new FormConsultGeneric(objProduct, new String[]{"ID Product", "Name"}, FormSale.this).setVisible(true);
+            }catch (Exception e1){
+                System.out.println(e1.getMessage());
+            }
         });
 
         btnFindSeller.addActionListener(e->{
+            try {
+                ModelLogin ObjSeller = new ModelLogin();
 
+                new FormConsultGeneric(ObjSeller, new String[]{"ID Seller", "Name"}, FormSale.this).setVisible(true);
+            }catch (Exception e1){
+                System.out.println(e1.getMessage());
+            }
         });
 
+        btnSave.addActionListener(e->{
+            try {
+
+                ServiceSale serviceSale = new ServiceSale();
+                ServiceSaleProduct serviceSaleProduct = new ServiceSaleProduct();
+
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                LocalDate dateCreation = LocalDate.parse(txfDateCreation.getText(), formatter);
+
+                ModelSaleProduct saleProduct = new ModelSaleProduct();
+
+                saleProduct.setIdSale(Long.valueOf(txfCodSale.getText()));
+                saleProduct.setDateCreation(dateCreation);
+
+                int totalRows = tblmodelSales.getRowCount();
+
+                for (int i = 0; i < totalRows; i++) {
+                    saleProduct.setDateCreation((LocalDate) tblmodelSales.getValueAt(i, 0));
+                    saleProduct.setDiscount((double) tblmodelSales.getValueAt(i, 2));
+                    saleProduct.setQuantity((int) tblmodelSales.getValueAt(i, 3));
+                    saleProduct.setTotal((int) tblmodelSales.getValueAt(i, 4));
+
+                    serviceSaleProduct.InsertSaleProduct(saleProduct);
+                }
+
+                java.util.List<ModelSaleProduct> saleProductList = objectMapper.readValue(serviceSaleProduct.FindAll(), new TypeReference<List<ModelSaleProduct>>() {});
+                Long maxId = 0L;
+                for(ModelSaleProduct obj : saleProductList){
+                    if(obj.getId() > maxId){
+                        maxId = obj.getId();
+                    }
+                }
+                maxId++;
+                saleProduct.setId(maxId);
+
+                ModelSale sale = new ModelSale();
+
+                java.util.List<ModelSale> saleList = objectMapper.readValue(serviceSale.FindAll(), new TypeReference<List<ModelSale>>() {});
+                Long maxIdSale = 0L;
+                for(ModelSale obj : saleList){
+                    if(obj.getId() > maxIdSale){
+                        maxIdSale = obj.getId();
+                    }
+                }
+
+                maxIdSale++;
+
+                sale.setId(maxIdSale);
+                sale.setIdClient(Long.valueOf(txfCodClient.getText()));
+                sale.setDateCreation(dateCreation);
+                sale.setTotalValue(Double.parseDouble(txfTotalValueProduct.getText()));
+                sale.setSaleProduct(saleProduct);
+
+                serviceSale.InsertSale(sale);
+
+                JOptionPane.showMessageDialog(null, "Sale saved");
+
+            } catch (Exception e1){
+                System.out.println("ERROR insert: " + e1.getMessage());
+            }
+
+        });
 
     }
 
@@ -265,10 +346,10 @@ public class FormSale extends JInternalFrame implements Observer {
             ModelProduct product = (ModelProduct) obj;
             txfCodProduct.setText(String.valueOf(product.getId()));
             txfNameProduct.setText(product.getName());
-        } else if (obj instanceof ModelSale){
-            ModelSale sale = (ModelSale) obj;
-            //txfCodSeller.setText(String.valueOf(sale.getId()));
-            //txfNameSeller.setText(sale.getName());
+        } else if (obj instanceof ModelLogin){
+            ModelLogin login = (ModelLogin) obj;
+            txfCodSeller.setText(String.valueOf(login.getId()));
+            txfNameSeller.setText(login.getName());
         }
 
     }

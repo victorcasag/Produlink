@@ -543,7 +543,13 @@ public class FormClient extends JInternalFrame implements Observer {
         });
 
         btnConsultClient.addActionListener(e->{
-            new FormConsultClient(new String[] {"ID Client", "Name"}, FormClient.this).setVisible(true);
+            try {
+                ModelClient objClient = new ModelClient();
+
+                new FormConsultGeneric(objClient, new String[]{"ID Client", "Name"}, FormClient.this).setVisible(true);
+            }catch (Exception e1){
+                System.out.println(e1.getMessage());
+            }
         });
 
         btnSave.addActionListener(e->{
