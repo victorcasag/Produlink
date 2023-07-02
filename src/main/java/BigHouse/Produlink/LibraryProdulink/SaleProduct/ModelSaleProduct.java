@@ -1,14 +1,26 @@
 package BigHouse.Produlink.LibraryProdulink.SaleProduct;
 
+import BigHouse.Produlink.LibraryProdulink.Product.ModelProduct;
+import BigHouse.Produlink.LibraryProdulink.Sale.ModelSale;
+
 import java.time.LocalDate;
 
 public class ModelSaleProduct {
     public Long id;
-    public Long idSale;
+    public ModelSale sale;
     public int quantity;
     public double discount;
     public double total;
     public LocalDate dateCreation;
+    public ModelProduct product;
+
+    public ModelProduct getProduct() {
+        return product;
+    }
+
+    public void setProduct(ModelProduct product) {
+        this.product = product;
+    }
 
     public Long getId() {
         return id;
@@ -18,12 +30,12 @@ public class ModelSaleProduct {
         this.id = id;
     }
 
-    public Long getIdSale() {
-        return idSale;
+    public ModelSale getSale() {
+        return sale;
     }
 
-    public void setIdSale(Long idSale) {
-        this.idSale = idSale;
+    public void setSale(ModelSale sale) {
+        this.sale = sale;
     }
 
     public int getQuantity() {

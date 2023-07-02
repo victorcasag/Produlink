@@ -1,18 +1,28 @@
 package BigHouse.Produlink.LibraryProdulink.Sale;
 
 import BigHouse.Produlink.LibraryProdulink.Client.ModelClient;
+import BigHouse.Produlink.LibraryProdulink.Login.ModelLogin;
 import BigHouse.Produlink.LibraryProdulink.SaleProduct.ModelSaleProduct;
 
 import java.time.LocalDate;
 
 public class ModelSale {
     public Long id;
-    public Long idClient;
+    public ModelClient client;
     public ModelSaleProduct saleProduct;
+    public ModelLogin login;
     public LocalDate dateCreation;
     public double totalValue;
     public double discount;
     public String condition;
+
+    public ModelLogin getLogin() {
+        return login;
+    }
+
+    public void setLogin(ModelLogin login) {
+        this.login = login;
+    }
 
     public Long getId() {
         return id;
@@ -22,12 +32,12 @@ public class ModelSale {
         this.id = id;
     }
 
-    public Long getIdClient() {
-        return idClient;
+    public ModelClient getClient() {
+        return client;
     }
 
-    public void setIdClient(Long idClient) {
-        this.idClient = idClient;
+    public void setClient(ModelClient client) {
+        this.client = client;
     }
 
     public ModelSaleProduct getSaleProduct() {

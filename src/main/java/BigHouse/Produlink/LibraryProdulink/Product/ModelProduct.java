@@ -1,5 +1,8 @@
 package BigHouse.Produlink.LibraryProdulink.Product;
 
+import BigHouse.Produlink.LibraryProdulink.Category.ModelCategory;
+import BigHouse.Produlink.LibraryProdulink.Vendor.ModelVendor;
+
 import java.util.Date;
 
 public class ModelProduct {
@@ -11,11 +14,34 @@ public class ModelProduct {
     public Long stock;
     public String unit;
     public Date dateOfPurchase;
-    public Date datelastupdate;
+    public Date dateLastUpdate;
     public double salePrice;
     public double profitMargin;
     public String urlPhoto;
-    public long codeBar;
+    public long barCode;
+    public ModelCategory category;
+    public ModelVendor vendor;
+    public String measure;
+
+    public Date getDateLastUpdate() {
+        return dateLastUpdate;
+    }
+
+    public ModelVendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(ModelVendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public ModelCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ModelCategory category) {
+        this.category = category;
+    }
 
     public Long getId() {
         return id;
@@ -81,12 +107,12 @@ public class ModelProduct {
         this.dateOfPurchase = dateOfPurchase;
     }
 
-    public Date getDatelastupdate() {
-        return datelastupdate;
+    public Date GetDateLastUpdate() {
+        return dateLastUpdate;
     }
 
-    public void setDatelastupdate(Date datelastupdate) {
-        this.datelastupdate = datelastupdate;
+    public void setDateLastUpdate(Date dateLastUpdate) {
+        this.dateLastUpdate = dateLastUpdate;
     }
 
     public double getSalePrice() {
@@ -113,11 +139,11 @@ public class ModelProduct {
         this.urlPhoto = urlPhoto;
     }
 
-    public long getCodeBar() {
-        return codeBar;
+    public long getBarCode() {
+        return barCode;
     }
 
-    public void setCodeBar(long codeBar) {
-        this.codeBar = codeBar;
+    public void setBarCode(long barCode) {
+        this.barCode = barCode;
     }
 }

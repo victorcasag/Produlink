@@ -1,31 +1,30 @@
 package BigHouse.Produlink.LibraryGUIProdulink;
 
-import BigHouse.Produlink.LibraryProdulink.Address.ModelAddress;
-import BigHouse.Produlink.LibraryProdulink.Address.ServiceAddress;
 import BigHouse.Produlink.LibraryProdulink.Client.ModelClient;
-import BigHouse.Produlink.LibraryProdulink.Client.ServiceClient;
 import BigHouse.Produlink.LibraryProdulink.Login.ModelLogin;
-import BigHouse.Produlink.LibraryProdulink.Login.ServiceLogin;
 import BigHouse.Produlink.LibraryProdulink.Observer.Observer;
 import BigHouse.Produlink.LibraryProdulink.Product.ModelProduct;
-import BigHouse.Produlink.LibraryProdulink.Product.ServiceProduct;
 import BigHouse.Produlink.LibraryProdulink.Sale.ModelSale;
 import BigHouse.Produlink.LibraryProdulink.Sale.ServiceSale;
 import BigHouse.Produlink.LibraryProdulink.SaleProduct.ModelSaleProduct;
 import BigHouse.Produlink.LibraryProdulink.SaleProduct.ServiceSaleProduct;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 public class FormSale extends JInternalFrame implements Observer {
@@ -33,17 +32,19 @@ public class FormSale extends JInternalFrame implements Observer {
     private JScrollPane spSales = new JScrollPane();
     private DefaultTableModel tblmodelSales= new DefaultTableModel(){public boolean isCellEditable(int row, int col) {return false;}};
 
-    JTextField txfCodSale = new JTextField();
+
+    JLabel lblTotal = new JLabel("Total: ");
+    JTextField txfCodSale = new JTextField(String.valueOf(SetMaxIdSale()));
     JTextField txfCodClient = new JTextField();
-    JTextField txfFullName = new JTextField("Marcel");
+    JTextField txfFullName = new JTextField();
     JTextField txfCodSeller = new JTextField();
-    JTextField txfNameSeller = new JTextField("Victor");
+    JTextField txfNameSeller = new JTextField();
     JTextField txfCodProduct = new JTextField();
-    JTextField txfNameProduct = new JTextField("Note");
-    JTextField txfQuantityProduct = new JTextField("13");
-    JTextField txfValueProduct = new JTextField("R$  ");
-    JTextField txfDiscountProduct = new JTextField("R$ ");
-    JTextField txfTotalValueProduct = new JTextField("R$ ");
+    JTextField txfNameProduct = new JTextField();
+    JTextField txfQuantityProduct = new JTextField("1");
+    JTextField txfValueProduct = new JTextField();
+    JFormattedTextField txfDiscountProduct = new JFormattedTextField("0");
+    JTextField txfTotalValueProduct = new JTextField();
 
     JButton btnCancel = new JButton("Cancel");
 
@@ -62,6 +63,7 @@ public class FormSale extends JInternalFrame implements Observer {
         setMaximizable(false);
         setClosable(true);
         setResizable(false);
+        setLayout(new FlowLayout());
         setLocation(175, 20);
         BuildForm();
         ActionsButtons();
@@ -101,6 +103,26 @@ public class FormSale extends JInternalFrame implements Observer {
 
         // Labels and TextFields
 
+        JLabel lblCodSale = new JLabel("Cod Sale");
+        lblCodSale.setBounds(750, 25, 100, 25);
+        lblCodSale.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(lblCodSale);
+
+        txfCodSale.setBounds(750, 50, 75, 20);
+        txfCodSale.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        panel.add(txfCodSale);
+
+        txfCodSale.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                try {
+                    ValidateCodSale();
+                } catch (IOException | InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
         JLabel lblCodClient = new JLabel("Cod Client");
         lblCodClient.setBounds(25, 25, 100, 25);
         lblCodClient.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
@@ -109,6 +131,7 @@ public class FormSale extends JInternalFrame implements Observer {
         txfCodClient.setBounds(25, 50, 75, 20);
         txfCodClient.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfCodClient);
+        txfCodClient.setEnabled(false);
 
         JLabel lblFullName = new JLabel("Name client");
         lblFullName.setBounds(130, 25, 100, 25);
@@ -118,6 +141,7 @@ public class FormSale extends JInternalFrame implements Observer {
         txfFullName.setBounds(130, 50, 300, 20);
         txfFullName.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfFullName);
+        txfFullName.setEnabled(false);
 
         JLabel lblCodSeller = new JLabel("Cod Seller");
         lblCodSeller.setBounds(25, 75, 100, 25);
@@ -127,6 +151,7 @@ public class FormSale extends JInternalFrame implements Observer {
         txfCodSeller.setBounds(25, 100, 75, 20);
         txfCodSeller.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfCodSeller);
+        txfCodSeller.setEnabled(false);
 
         JLabel lblSeller = new JLabel("Name seller");
         lblSeller.setBounds(130, 75, 100, 25);
@@ -136,6 +161,7 @@ public class FormSale extends JInternalFrame implements Observer {
         txfNameSeller.setBounds(130, 100, 300, 20);
         txfNameSeller.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfNameSeller);
+        txfNameSeller.setEnabled(false);
 
         JLabel lblCodProduct = new JLabel("Cod Product");
         lblCodProduct.setBounds(25, 150, 100, 25);
@@ -145,6 +171,7 @@ public class FormSale extends JInternalFrame implements Observer {
         txfCodProduct.setBounds(25, 175, 75, 20);
         txfCodProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfCodProduct);
+        txfCodProduct.setEnabled(false);
 
         //Product
 
@@ -156,6 +183,7 @@ public class FormSale extends JInternalFrame implements Observer {
         txfNameProduct.setBounds(130, 175, 300, 20);
         txfNameProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfNameProduct);
+        txfNameProduct.setEnabled(false);
 
         JLabel lblQuantityProduct = new JLabel("Quantity");
         lblQuantityProduct.setBounds(475, 150, 75, 25);
@@ -175,21 +203,31 @@ public class FormSale extends JInternalFrame implements Observer {
         txfValueProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfValueProduct);
 
-        JLabel lblDiscountProduct = new JLabel("Discount");
+        JLabel lblDiscountProduct = new JLabel("Discount (%)");
         lblDiscountProduct.setBounds(625, 150, 100, 25);
         lblDiscountProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblDiscountProduct);
 
         txfDiscountProduct.setBounds(625, 175, 75, 20);
         txfDiscountProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        MaskFormatter maskDiscount = new MaskFormatter("###");
+        maskDiscount.install(txfDiscountProduct);
         panel.add(txfDiscountProduct);
 
+        txfDiscountProduct.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                ValidateDiscount();
+            }
+        });
+
+
         JLabel lblTotalValueProduct = new JLabel("Total");
-        lblTotalValueProduct.setBounds(700, 150, 100, 25);
+        lblTotalValueProduct.setBounds(725, 150, 100, 25);
         lblTotalValueProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(lblTotalValueProduct);
 
-        txfTotalValueProduct.setBounds(700, 175, 75, 20);
+        txfTotalValueProduct.setBounds(725, 175, 75, 20);
         txfTotalValueProduct.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
         panel.add(txfTotalValueProduct);
 
@@ -203,6 +241,12 @@ public class FormSale extends JInternalFrame implements Observer {
         MaskFormatter dateMaskDateCreation = new MaskFormatter("##/##/####");
         dateMaskDateCreation.install(txfDateCreation);
         panel.add(txfDateCreation);
+        txfDateCreation.setEnabled(false);
+
+        lblTotal.setBounds(600, 675, 500, 25);
+        lblTotal.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        panel.add(lblTotal);
+
 
         //Buttons
 
@@ -233,6 +277,57 @@ public class FormSale extends JInternalFrame implements Observer {
     }
 
     private void ActionsButtons(){
+
+        txfDiscountProduct.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+        });
+        txfValueProduct.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+        });
+
+        txfQuantityProduct.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                CalculateTotalValue();
+            }
+        });
+
         btnCancel.addActionListener(e->{
             dispose();
         });
@@ -267,13 +362,46 @@ public class FormSale extends JInternalFrame implements Observer {
             }
         });
 
+        btnAddTable.addActionListener(e->{
+            try{
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+                LocalDate dateCreation = LocalDate.parse(txfDateCreation.getText(), formatter);
+
+                ModelSale sale = new ModelSale();
+
+                sale.setId(Long.valueOf(txfCodSale.getText()));
+
+                ModelProduct product = new ModelProduct();
+
+                product.setId(Long.valueOf(txfCodProduct.getText()));
+                product.setName(txfNameProduct.getText());
+                product.setPrice(Double.parseDouble(txfValueProduct.getText()));
+
+                ModelSaleProduct saleProduct = new ModelSaleProduct();
+
+                saleProduct.setId(SetMaxIdSaleProduct());
+                saleProduct.setDiscount(Double.parseDouble(txfDiscountProduct.getText()));
+                saleProduct.setDateCreation(dateCreation);
+                saleProduct.setSale(sale);
+                saleProduct.setQuantity(Integer.parseInt(txfQuantityProduct.getText()));
+                saleProduct.setProduct(product);
+                saleProduct.setTotal(Double.parseDouble(txfTotalValueProduct.getText().replace(",", ".")));
+
+                Object[] rowData = {saleProduct.getId(), saleProduct.product.getName(), saleProduct.getQuantity(), saleProduct.product.getPrice() , saleProduct.getDiscount(), saleProduct.getTotal()};
+                tblmodelSales.addRow(rowData);
+
+                lblTotal.setText("Total: " + SetTotalLabel());
+            }catch (Exception e1){
+                System.out.println(e1.getMessage());
+            }
+        });
+
         btnSave.addActionListener(e->{
             try {
 
                 ServiceSale serviceSale = new ServiceSale();
                 ServiceSaleProduct serviceSaleProduct = new ServiceSaleProduct();
-
-                ObjectMapper objectMapper = new ObjectMapper();
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -281,7 +409,7 @@ public class FormSale extends JInternalFrame implements Observer {
 
                 ModelSaleProduct saleProduct = new ModelSaleProduct();
 
-                saleProduct.setIdSale(Long.valueOf(txfCodSale.getText()));
+                //saleProduct.setIdSale(Long.valueOf(txfCodSale.getText()));
                 saleProduct.setDateCreation(dateCreation);
 
                 int totalRows = tblmodelSales.getRowCount();
@@ -295,30 +423,12 @@ public class FormSale extends JInternalFrame implements Observer {
                     serviceSaleProduct.InsertSaleProduct(saleProduct);
                 }
 
-                java.util.List<ModelSaleProduct> saleProductList = objectMapper.readValue(serviceSaleProduct.FindAll(), new TypeReference<List<ModelSaleProduct>>() {});
-                Long maxId = 0L;
-                for(ModelSaleProduct obj : saleProductList){
-                    if(obj.getId() > maxId){
-                        maxId = obj.getId();
-                    }
-                }
-                maxId++;
-                saleProduct.setId(maxId);
+                saleProduct.setId(SetMaxIdSaleProduct());
 
                 ModelSale sale = new ModelSale();
 
-                java.util.List<ModelSale> saleList = objectMapper.readValue(serviceSale.FindAll(), new TypeReference<List<ModelSale>>() {});
-                Long maxIdSale = 0L;
-                for(ModelSale obj : saleList){
-                    if(obj.getId() > maxIdSale){
-                        maxIdSale = obj.getId();
-                    }
-                }
-
-                maxIdSale++;
-
-                sale.setId(maxIdSale);
-                sale.setIdClient(Long.valueOf(txfCodClient.getText()));
+                sale.setId(SetMaxIdSale());
+                //sale.setIdClient(Long.valueOf(txfCodClient.getText()));
                 sale.setDateCreation(dateCreation);
                 sale.setTotalValue(Double.parseDouble(txfTotalValueProduct.getText()));
                 sale.setSaleProduct(saleProduct);
@@ -335,6 +445,117 @@ public class FormSale extends JInternalFrame implements Observer {
 
     }
 
+    private String SetTotalLabel(){
+        double sum = 0.0;
+
+        int column = 5;
+
+        int lines = tblmodelSales.getRowCount();
+
+        for (int i = 0; i < lines; i++) {
+            double valor = Double.parseDouble(tblmodelSales.getValueAt(i, column).toString());
+            sum += valor;
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+        String valorTotalFormat = decimalFormat.format(sum);
+
+        return valorTotalFormat;
+    }
+
+    public Long SetMaxIdSaleProduct(){
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            ServiceSaleProduct serviceSaleProduct = new ServiceSaleProduct();
+            java.util.List<ModelSaleProduct> saleProductList = objectMapper.readValue(serviceSaleProduct.FindAll(), new TypeReference<List<ModelSaleProduct>>() {});
+            Long maxId = 0L;
+            for(ModelSaleProduct obj : saleProductList){
+                if(obj.getId() > maxId){
+                    maxId = obj.getId();
+                }
+            }
+            maxId++;
+
+            return maxId;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Long SetMaxIdSale(){
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            ServiceSale serviceSale = new ServiceSale();
+            java.util.List<ModelSale> saleList = objectMapper.readValue(serviceSale.FindAll(), new TypeReference<List<ModelSale>>() {});
+            Long maxId = 0L;
+            for(ModelSale obj : saleList){
+                if(obj.getId() > maxId){
+                    maxId = obj.getId();
+                }
+            }
+            maxId++;
+
+            return maxId;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+
+    private void ValidateDiscount(){
+        String text = txfDiscountProduct.getText();
+        if (!text.isEmpty()) {
+            try {
+                text = text.trim().replace(" ", "");
+                int discount = Integer.parseInt(text.trim());
+                if (discount < 0 || discount > 100) {
+                    JOptionPane.showMessageDialog(this, "The discount must be between 0 and 100.", "Invalid value", JOptionPane.ERROR_MESSAGE);
+                    txfDiscountProduct.setText("0");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid value.", "Error", JOptionPane.ERROR_MESSAGE);
+                txfDiscountProduct.setText("");
+            }
+        }
+    }
+
+    private void ValidateCodSale() throws IOException, InterruptedException {
+        String text = txfCodSale.getText();
+        if (!text.isEmpty()){
+            text = text.trim().replace(" ", "");
+            Long cod = Long.parseLong(text.trim());
+            ObjectMapper objectMapper = new ObjectMapper();
+            ServiceSale serviceSale = new ServiceSale();
+            ModelSale sale = objectMapper.readValue(serviceSale.FindById(cod), ModelSale.class);
+
+            txfCodClient.setText(String.valueOf(sale.client.getId()));
+            txfFullName.setText(sale.client.getName());
+
+            txfCodSeller.setText(String.valueOf(sale.));
+
+            //java.util.List<ModelSaleProduct> saleList = objectMapper.readValue(serviceSaleProduct.FindById(sale.getId()), new TypeReference<List<ModelSaleProduct>>() {});
+
+
+        }
+    }
+
+    private void CalculateTotalValue(){
+        try {
+            double value = Double.parseDouble(txfValueProduct.getText());
+            int quantity = Integer.parseInt(txfQuantityProduct.getText());
+            double discount = Double.parseDouble(txfDiscountProduct.getText());
+            double totalValue = (value - (value * discount / 100)) * quantity;
+
+            DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+            String valorTotalFormat = decimalFormat.format(totalValue);
+
+            txfTotalValueProduct.setText(valorTotalFormat);
+
+        } catch (NumberFormatException e) {
+            txfTotalValueProduct.setText("0");
+        }
+    }
     @Override
     public void Update(Object obj) {
 
@@ -346,6 +567,7 @@ public class FormSale extends JInternalFrame implements Observer {
             ModelProduct product = (ModelProduct) obj;
             txfCodProduct.setText(String.valueOf(product.getId()));
             txfNameProduct.setText(product.getName());
+            txfValueProduct.setText(String.valueOf(product.getPrice()));
         } else if (obj instanceof ModelLogin){
             ModelLogin login = (ModelLogin) obj;
             txfCodSeller.setText(String.valueOf(login.getId()));
