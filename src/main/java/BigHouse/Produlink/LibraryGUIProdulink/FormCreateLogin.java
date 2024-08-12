@@ -1,11 +1,18 @@
 package BigHouse.Produlink.LibraryGUIProdulink;
 
+import BigHouse.Produlink.LibraryProdulink.Address.ModelAddress;
+import BigHouse.Produlink.LibraryProdulink.Client.ModelClient;
 import BigHouse.Produlink.LibraryProdulink.Login.ModelLogin;
 import BigHouse.Produlink.LibraryProdulink.Login.ServiceLogin;
 import BigHouse.Produlink.LibraryProdulink.Observer.Observer;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.MapperBuilder;
 
 import java.awt.Font;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
@@ -134,10 +141,27 @@ public class FormCreateLogin extends JInternalFrame implements Observer {
                     login.setName(txfName.getText());
                     login.setRole(String.valueOf(cbProfile.getSelectedItem()));
 
-                    serviceLogin.InsertNewLogin(login);
+                    if (serviceLogin.Exists(login.getLogin())){
+                        if(JOptionPane.showConfirmDialog(null, "Already exists. \nDo you want to overwrite?", "Already Exists", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+
+                            ObjectMapper objectMapper = new ObjectMapper();
+
+                            login = objectMapper.readValue(serviceLogin.FindByUsername(login.getLogin()), ModelLogin.class);
+
+                            login.setLogin(txfUsername.getText());
+                            login.setPassword(txfPassword.getText());
+                            login.setName(txfName.getText());
+                            login.setRole(String.valueOf(cbProfile.getSelectedItem()));
+
+                            serviceLogin.InsertNewLogin(login);
+                        }
+                    }else{
+                        serviceLogin.InsertNewLogin(login);
+                    }
 
                     JOptionPane.showMessageDialog(null, "Inserted login");
 
+                    txfName.setText("");
                     txfUsername.setText("");
                     txfPassword.setText("");
                     txfConfirmPassword.setText("");
@@ -151,7 +175,9 @@ public class FormCreateLogin extends JInternalFrame implements Observer {
 
             btnConsult.addActionListener(e->{
 
-                //new windowConsultUsers(windowCreateUser.this).setVisible(true);
+                ModelLogin objLogin = new ModelLogin();
+
+                new FormConsultGeneric(objLogin, new String[]{"ID Login", "Login"}, FormCreateLogin.this).setVisible(true);
 
             });
 
@@ -192,10 +218,11 @@ public class FormCreateLogin extends JInternalFrame implements Observer {
         @Override
         public void Update(Object obj) {
             ModelLogin login = (ModelLogin) obj;
+            txfName.setText(login.getName());
             txfUsername.setText(login.getLogin());
             txfPassword.setText(login.getPassword());
             txfConfirmPassword.setText(login.getPassword());
-            cbProfile.setSelectedIndex(Integer.parseInt(login.getRole()));
+            cbProfile.setSelectedItem(login.getRole());
         }
 
 }

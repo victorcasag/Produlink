@@ -36,7 +36,17 @@ public class ServiceClient {
 
         return response.body();
     }
+    public boolean Exists(Long id) throws IOException, InterruptedException {
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String apiUrl = "http://localhost:8080/api/client/search/exists/" + id;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        int statusCode = response.statusCode();
+        return statusCode == 200;
+    }
     public void InsertClient(ModelClient client) throws IOException {
         String apiUrl = "http://localhost:8080/api/client/insert";
 

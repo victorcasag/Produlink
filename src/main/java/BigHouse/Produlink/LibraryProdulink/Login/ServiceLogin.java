@@ -25,6 +25,18 @@ public class ServiceLogin {
         return response.body();
     }
 
+    public String FindById(int id) throws IOException, InterruptedException{
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String apiUrl = "http://localhost:8080/api/login/search/" + id;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return response.body();
+    }
+
     public String FindByUsername(String username) throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         String apiUrl = "http://localhost:8080/api/login/search/by-name/" + username;
@@ -35,6 +47,20 @@ public class ServiceLogin {
 
         return response.body();
     }
+
+    public boolean Exists(String login) throws IOException, InterruptedException {
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String apiUrl = "http://localhost:8080/api/login/search/exists/" + login;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        int statusCode = response.statusCode();
+        return statusCode == 200;
+    }
+
+
 
     public void InsertNewLogin(ModelLogin login) throws IOException {
         String apiUrl = "http://localhost:8080/api/login/insert";

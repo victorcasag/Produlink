@@ -78,6 +78,22 @@ public class FormLogin extends JDialog {
 
                 ObjectMapper objectMapper = new ObjectMapper();
 
+
+                System.out.println(serviceLogin.FindById(0));
+
+
+                if (serviceLogin.FindById(0).contains("Not Found")){
+
+                    ModelLogin login = new ModelLogin();
+
+                    login.setLogin("admin");
+                    login.setName("ADMIN");
+                    login.setRole("ADMIN");
+                    login.setPassword("admin");
+
+                    serviceLogin.InsertNewLogin(login);
+                }
+
                 ModelLogin login = objectMapper.readValue(serviceLogin.FindByUsername(username), ModelLogin.class);
 
                if (login.getLogin().equals(txfLogin.getText()) && login.getPassword().equals(txfPassword.getText())){

@@ -11,6 +11,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -78,6 +81,8 @@ public class FormClient extends JInternalFrame implements Observer {
     JComboBox<String> cbSex = new JComboBox<String>(combBoxTextsSex);
     JComboBox<String> cbState = new JComboBox<String>(combBoxTextsStates);
     JPanel panel = new JPanel();
+
+    Path imagePathGlobal;
 
     public FormClient() throws ParseException, IOException, InterruptedException {
 
@@ -554,19 +559,20 @@ public class FormClient extends JInternalFrame implements Observer {
 
         btnSave.addActionListener(e->{
             try {
+
+                Path folderPath = Paths.get("C:\\develop\\projects\\produlink\\src\\main\\java\\BigHouse\\Produlink\\Images");
+
+
+                if (!Files.exists(folderPath)){Files.createDirectory(folderPath);}
+
+                Files.copy(imagePathGlobal, folderPath);
+
                 //Validations();
 
                 ServiceClient serviceClient = new ServiceClient();
                 ServiceAddress serviceAddress = new ServiceAddress();
 
                 ObjectMapper objectMapper = new ObjectMapper();
-
-                try {
-                    //ModelClient client = objectMapper.readValue(serviceClient.FindById(Long.valueOf(txfCodClient.getText())), ModelClient.class);
-                    //update
-                }catch (Exception e1){
-                    //continua code
-                }
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -576,15 +582,6 @@ public class FormClient extends JInternalFrame implements Observer {
 
                 ModelAddress address = new ModelAddress();
 
-                address.setCountry(txfCountry.getText());
-                address.setNumber(Integer.parseInt(txfCodHouse.getText().trim()));
-                address.setReference(txfReference.getText());
-                address.setNeighborhood(txfNeighborhood.getText());
-                address.setState((String) cbState.getSelectedItem());
-                address.setStreet(txfStreet.getText());
-                address.setZipcode(txfZipCode.getText());
-                address.setCity(txfCity.getText());
-
                 java.util.List<ModelAddress> addressList = objectMapper.readValue(serviceAddress.FindAll(), new TypeReference<List<ModelAddress>>() {});
                 Long maxId = 0L;
                 for(ModelAddress obj : addressList){
@@ -593,7 +590,16 @@ public class FormClient extends JInternalFrame implements Observer {
                     }
                 }
                 maxId++;
+
                 address.setId(maxId);
+                address.setCountry(txfCountry.getText());
+                address.setNumber(Integer.parseInt(txfCodHouse.getText().trim()));
+                address.setReference(txfReference.getText());
+                address.setNeighborhood(txfNeighborhood.getText());
+                address.setState((String) cbState.getSelectedItem());
+                address.setStreet(txfStreet.getText());
+                address.setZipcode(txfZipCode.getText());
+                address.setCity(txfCity.getText());
 
                 ModelClient client = new ModelClient();
 
@@ -626,10 +632,15 @@ public class FormClient extends JInternalFrame implements Observer {
                 client.setFlagCreation(true);
                 client.setCreditLimit(Double.valueOf(txfLimitlessCredit.getText()));
 
-                serviceClient.InsertClient(client);
+                if (serviceClient.Exists(client.getId())){
 
-                JOptionPane.showMessageDialog(null, "Client saved");
-
+                    client.setId(maxIdClient);
+                    serviceClient.InsertClient(client);
+                    JOptionPane.showMessageDialog(null, "Client updated");
+                }else {
+                    serviceClient.InsertClient(client);
+                    JOptionPane.showMessageDialog(null, "Client saved");
+                }
             } catch (Exception e1){
                 System.out.println("ERROR insert: " + e1.getMessage());
             }
@@ -680,6 +691,7 @@ public class FormClient extends JInternalFrame implements Observer {
             int op = fcFile.showOpenDialog(form);
             if(op == JFileChooser.APPROVE_OPTION) {
                 ImageIcon image = new ImageIcon(fcFile.getSelectedFile().getPath());
+                imagePathGlobal = Path.of(fcFile.getSelectedFile().getPath());
                 lblImage.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblImage.getWidth(), lblImage.getHeight(), Image.SCALE_DEFAULT)));
             }
         }catch (Exception e){

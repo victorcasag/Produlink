@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 public class FormSale extends JInternalFrame implements Observer {
@@ -403,19 +404,19 @@ public class FormSale extends JInternalFrame implements Observer {
                 ServiceSale serviceSale = new ServiceSale();
                 ServiceSaleProduct serviceSaleProduct = new ServiceSaleProduct();
 
+                ModelSaleProduct saleProduct = new ModelSaleProduct();
+                ModelSale sale = new ModelSale();
+
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
                 LocalDate dateCreation = LocalDate.parse(txfDateCreation.getText(), formatter);
 
-                ModelSaleProduct saleProduct = new ModelSaleProduct();
-
-                //saleProduct.setIdSale(Long.valueOf(txfCodSale.getText()));
                 saleProduct.setDateCreation(dateCreation);
 
                 int totalRows = tblmodelSales.getRowCount();
 
                 for (int i = 0; i < totalRows; i++) {
-                    saleProduct.setDateCreation((LocalDate) tblmodelSales.getValueAt(i, 0));
+                    saleProduct.product.setId((Long) tblmodelSales.getValueAt(i, 0));
                     saleProduct.setDiscount((double) tblmodelSales.getValueAt(i, 2));
                     saleProduct.setQuantity((int) tblmodelSales.getValueAt(i, 3));
                     saleProduct.setTotal((int) tblmodelSales.getValueAt(i, 4));
@@ -423,12 +424,13 @@ public class FormSale extends JInternalFrame implements Observer {
                     serviceSaleProduct.InsertSaleProduct(saleProduct);
                 }
 
+                sale.client.setId(Long.valueOf(txfCodClient.getText()));
+                sale.client.setName(txfFullName.getName());
+
                 saleProduct.setId(SetMaxIdSaleProduct());
 
-                ModelSale sale = new ModelSale();
-
-                sale.setId(SetMaxIdSale());
-                //sale.setIdClient(Long.valueOf(txfCodClient.getText()));
+                sale.setId(Long.valueOf(txfCodSale.getText()));
+                sale.setClient(sale.client);
                 sale.setDateCreation(dateCreation);
                 sale.setTotalValue(Double.parseDouble(txfTotalValueProduct.getText()));
                 sale.setSaleProduct(saleProduct);
@@ -502,7 +504,6 @@ public class FormSale extends JInternalFrame implements Observer {
         return null;
     }
 
-
     private void ValidateDiscount(){
         String text = txfDiscountProduct.getText();
         if (!text.isEmpty()) {
@@ -532,7 +533,7 @@ public class FormSale extends JInternalFrame implements Observer {
             txfCodClient.setText(String.valueOf(sale.client.getId()));
             txfFullName.setText(sale.client.getName());
 
-            txfCodSeller.setText(String.valueOf(sale.));
+            //txfCodSeller.setText(String.valueOf(sale.));
 
             //java.util.List<ModelSaleProduct> saleList = objectMapper.readValue(serviceSaleProduct.FindById(sale.getId()), new TypeReference<List<ModelSaleProduct>>() {});
 
